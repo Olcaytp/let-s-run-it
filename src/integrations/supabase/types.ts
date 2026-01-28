@@ -14,7 +14,179 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      help_offers: {
+        Row: {
+          created_at: string
+          helper_approved: boolean
+          helper_user_id: string
+          id: string
+          message: string | null
+          need_id: string
+          requester_approved: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          helper_approved?: boolean
+          helper_user_id: string
+          id?: string
+          message?: string | null
+          need_id: string
+          requester_approved?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          helper_approved?: boolean
+          helper_user_id?: string
+          id?: string
+          message?: string | null
+          need_id?: string
+          requester_approved?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "help_offers_need_id_fkey"
+            columns: ["need_id"]
+            isOneToOne: false
+            referencedRelation: "needs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      needs: {
+        Row: {
+          budget_amount: number | null
+          budget_currency: string
+          category: Database["public"]["Enums"]["need_category"]
+          created_at: string
+          description: string
+          id: string
+          location: string | null
+          needed_by: string | null
+          status: Database["public"]["Enums"]["need_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget_amount?: number | null
+          budget_currency?: string
+          category?: Database["public"]["Enums"]["need_category"]
+          created_at?: string
+          description: string
+          id?: string
+          location?: string | null
+          needed_by?: string | null
+          status?: Database["public"]["Enums"]["need_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget_amount?: number | null
+          budget_currency?: string
+          category?: Database["public"]["Enums"]["need_category"]
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string | null
+          needed_by?: string | null
+          status?: Database["public"]["Enums"]["need_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          related_need_id: string | null
+          related_offer_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          related_need_id?: string | null
+          related_offer_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          related_need_id?: string | null
+          related_offer_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_related_need_id_fkey"
+            columns: ["related_need_id"]
+            isOneToOne: false
+            referencedRelation: "needs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_related_offer_id_fkey"
+            columns: ["related_offer_id"]
+            isOneToOne: false
+            referencedRelation: "help_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          apartment_number: string | null
+          avatar_url: string | null
+          bio: string | null
+          building_name: string | null
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apartment_number?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          building_name?: string | null
+          created_at?: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apartment_number?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          building_name?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +195,26 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      need_category:
+        | "cleaning"
+        | "moving"
+        | "pet_care"
+        | "childcare"
+        | "shopping"
+        | "repairs"
+        | "gardening"
+        | "cooking"
+        | "transportation"
+        | "tutoring"
+        | "technology"
+        | "other"
+      need_status:
+        | "open"
+        | "pending_helper_contact"
+        | "pending_requester_contact"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +341,29 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      need_category: [
+        "cleaning",
+        "moving",
+        "pet_care",
+        "childcare",
+        "shopping",
+        "repairs",
+        "gardening",
+        "cooking",
+        "transportation",
+        "tutoring",
+        "technology",
+        "other",
+      ],
+      need_status: [
+        "open",
+        "pending_helper_contact",
+        "pending_requester_contact",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
+    },
   },
 } as const
