@@ -8,13 +8,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Bell, Plus, User, LogOut, Home, HandHeart, Menu } from 'lucide-react';
+import { Bell, Plus, User, LogOut, Home, HandHeart, Menu, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 
 export function Header() {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -104,6 +106,12 @@ export function Header() {
                     <HandHeart className="mr-2 h-4 w-4" />
                     Mina behov
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate('/admin')}>
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />

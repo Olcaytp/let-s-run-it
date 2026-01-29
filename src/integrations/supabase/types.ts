@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      commissions: {
+        Row: {
+          commission_amount: number
+          commission_rate: number
+          completed_at: string | null
+          created_at: string
+          currency: string
+          help_offer_id: string | null
+          helper_user_id: string
+          id: string
+          need_id: string | null
+          original_amount: number
+          requester_user_id: string
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_transfer_id: string | null
+        }
+        Insert: {
+          commission_amount: number
+          commission_rate?: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          help_offer_id?: string | null
+          helper_user_id: string
+          id?: string
+          need_id?: string | null
+          original_amount: number
+          requester_user_id: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
+        }
+        Update: {
+          commission_amount?: number
+          commission_rate?: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          help_offer_id?: string | null
+          helper_user_id?: string
+          id?: string
+          need_id?: string | null
+          original_amount?: number
+          requester_user_id?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_help_offer_id_fkey"
+            columns: ["help_offer_id"]
+            isOneToOne: false
+            referencedRelation: "help_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commissions_need_id_fkey"
+            columns: ["need_id"]
+            isOneToOne: false
+            referencedRelation: "needs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       help_offers: {
         Row: {
           created_at: string
@@ -187,14 +253,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "user"
       need_category:
         | "cleaning"
         | "moving"
@@ -342,6 +436,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "user"],
       need_category: [
         "cleaning",
         "moving",
