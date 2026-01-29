@@ -13,7 +13,7 @@ import { NEED_CATEGORIES, NEED_STATUS, NeedCategory, NeedStatus } from '@/lib/co
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { sv } from 'date-fns/locale';
-import { ArrowLeft, Calendar, MapPin, Coins, Check, Loader2, Phone, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Coins, Check, Loader2, Phone, MessageSquare, CreditCard } from 'lucide-react';
 import * as Icons from 'lucide-react';
 
 interface NeedWithProfile {
@@ -199,6 +199,26 @@ export default function NeedDetail() {
     fetchOffers();
   };
 
+  const handlePayment = async (offerId: string) => {
+    if (!id) return;
+    
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('process-payment', {
+        body: { need_id: id, help_offer_id: offerId }
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Kunde inte starta betalning');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   if (authLoading || loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -375,6 +395,17 @@ export default function NeedDetail() {
                             </p>
                           )}
                         </div>
+                      )}
+
+                      {/* Payment button when both approved */}
+                      {canShowContact(offer) && need.budget_amount && need.status !== 'completed' && (
+                        <Button
+                          className="w-full gap-2"
+                          onClick={() => handlePayment(offer.id)}
+                        >
+                          <CreditCard className="h-4 w-4" />
+                          Betala {need.budget_amount} {need.budget_currency} (inkl. 10% serviceavgift)
+                        </Button>
                       )}
 
                       {offer.requester_approved && !offer.helper_approved && (
