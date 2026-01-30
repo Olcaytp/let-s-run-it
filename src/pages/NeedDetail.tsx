@@ -31,6 +31,7 @@ interface NeedWithProfile {
   ownerName: string;
   ownerPhone: string | null;
   ownerApartment: string | null;
+  ownerBuilding: string | null;
 }
 
 interface HelpOfferWithProfile {
@@ -44,6 +45,7 @@ interface HelpOfferWithProfile {
   helperName: string;
   helperPhone: string | null;
   helperApartment: string | null;
+  helperBuilding: string | null;
 }
 
 export default function NeedDetail() {
@@ -101,7 +103,7 @@ export default function NeedDetail() {
     // Fetch owner profile
     const { data: profileData } = await supabase
       .from('profiles')
-      .select('full_name, phone, apartment_number')
+      .select('full_name, phone, apartment_number, building_name')
       .eq('user_id', needData.user_id)
       .maybeSingle();
 
@@ -110,6 +112,7 @@ export default function NeedDetail() {
       ownerName: profileData?.full_name || 'Okänd',
       ownerPhone: profileData?.phone || null,
       ownerApartment: profileData?.apartment_number || null,
+      ownerBuilding: profileData?.building_name || null,
     });
     setLoading(false);
   };
@@ -132,11 +135,11 @@ export default function NeedDetail() {
     // Fetch profiles for helpers
     const { data: profilesData } = await supabase
       .from('profiles')
-      .select('user_id, full_name, phone, apartment_number')
+      .select('user_id, full_name, phone, apartment_number, building_name')
       .in('user_id', helperIds);
 
     const profilesMap = new Map(
-      profilesData?.map(p => [p.user_id, { name: p.full_name, phone: p.phone, apartment: p.apartment_number }]) || []
+      profilesData?.map(p => [p.user_id, { name: p.full_name, phone: p.phone, apartment: p.apartment_number, building: p.building_name }]) || []
     );
 
     const offersWithProfiles: HelpOfferWithProfile[] = offersData.map(offer => {
@@ -146,6 +149,7 @@ export default function NeedDetail() {
         helperName: profile?.name || 'Okänd',
         helperPhone: profile?.phone || null,
         helperApartment: profile?.apartment || null,
+        helperBuilding: profile?.building || null,
       };
     });
 
@@ -400,10 +404,12 @@ export default function NeedDetail() {
                               {offer.helperPhone}
                             </p>
                           )}
-                          {offer.helperApartment && (
+                          {(offer.helperBuilding || offer.helperApartment) && (
                             <p className="text-sm flex items-center gap-2">
                               <MapPin className="h-4 w-4" />
-                              Lägenhet: {offer.helperApartment}
+                              {offer.helperBuilding && <span>{offer.helperBuilding}</span>}
+                              {offer.helperBuilding && offer.helperApartment && ', '}
+                              {offer.helperApartment && <span>Lgh {offer.helperApartment}</span>}
                             </p>
                           )}
                         </div>
@@ -462,10 +468,12 @@ export default function NeedDetail() {
                         {need.ownerPhone}
                       </p>
                     )}
-                    {need.ownerApartment && (
+                    {(need.ownerBuilding || need.ownerApartment) && (
                       <p className="text-sm flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
-                        Lägenhet: {need.ownerApartment}
+                        {need.ownerBuilding && <span>{need.ownerBuilding}</span>}
+                        {need.ownerBuilding && need.ownerApartment && ', '}
+                        {need.ownerApartment && <span>Lgh {need.ownerApartment}</span>}
                       </p>
                     )}
                   </div>
