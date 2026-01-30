@@ -17,8 +17,8 @@ import { Loader2, User } from 'lucide-react';
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Namn måste vara minst 2 tecken').max(100),
-  phone: z.string().max(20).optional(),
-  apartmentNumber: z.string().max(20).optional(),
+  phone: z.string().min(1, 'Telefonnummer krävs för att kunna hjälpa och ta emot hjälp').max(20),
+  apartmentNumber: z.string().min(1, 'Lägenhetsnummer krävs').max(20),
   buildingName: z.string().max(100).optional(),
   bio: z.string().max(500).optional(),
 });
@@ -162,7 +162,7 @@ export default function Profile() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Telefonnummer</FormLabel>
+                        <FormLabel>Telefonnummer *</FormLabel>
                         <FormControl>
                           <Input placeholder="+46 70 123 45 67" {...field} />
                         </FormControl>
@@ -179,7 +179,7 @@ export default function Profile() {
                     name="apartmentNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Lägenhetsnummer</FormLabel>
+                        <FormLabel>Lägenhetsnummer *</FormLabel>
                         <FormControl>
                           <Input placeholder="t.ex. 1204" {...field} />
                         </FormControl>

@@ -57,6 +57,7 @@ export default function NeedDetail() {
   const [offerMessage, setOfferMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showOfferDialog, setShowOfferDialog] = useState(false);
+  const [myProfile, setMyProfile] = useState<{ phone: string | null; apartment_number: string | null } | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -68,8 +69,19 @@ export default function NeedDetail() {
     if (user && id) {
       fetchNeed();
       fetchOffers();
+      fetchMyProfile();
     }
   }, [user, id]);
+
+  const fetchMyProfile = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('phone, apartment_number')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    setMyProfile(data);
+  };
 
   const fetchNeed = async () => {
     if (!id) return;
@@ -484,6 +496,21 @@ export default function NeedDetail() {
                           Bekräfta för att se kontaktuppgifter
                         </Button>
                       )}
+                    </div>
+                  ) : !myProfile?.phone || !myProfile?.apartment_number ? (
+                    <div className="space-y-4">
+                      <div className="text-center p-4 bg-warning/10 border border-warning/20 rounded-lg">
+                        <p className="font-medium text-warning-foreground">Profil ofullständig</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Du måste fylla i telefonnummer och lägenhetsnummer innan du kan erbjuda hjälp.
+                        </p>
+                      </div>
+                      <Button
+                        className="w-full"
+                        onClick={() => navigate('/profile')}
+                      >
+                        Gå till profil
+                      </Button>
                     </div>
                   ) : (
                     <Dialog open={showOfferDialog} onOpenChange={setShowOfferDialog}>
