@@ -102,6 +102,9 @@ serve(async (req) => {
     }
     logStep("Customer lookup", { customerId, email: requesterEmail });
 
+    // Get origin from header or use default
+    const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/$/, '') || "https://cfa73f3f-3032-4ce1-93d6-d7a266906d5d.lovableproject.com";
+
     // Create checkout session for payment
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -120,8 +123,8 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/needs/${need_id}?payment=success`,
-      cancel_url: `${req.headers.get("origin")}/needs/${need_id}?payment=cancelled`,
+      success_url: `${origin}/needs/${need_id}?payment=success`,
+      cancel_url: `${origin}/needs/${need_id}?payment=cancelled`,
       metadata: {
         need_id,
         help_offer_id,
